@@ -3,7 +3,8 @@
  */
 
 const express      = require('express');
-const mongoose     = require('mongoose')
+const mongoose = require('mongoose');
+const passport = require('passport');
 const path         = require('path');
 const favicon      = require('serve-favicon');
 const logger       = require('morgan');
@@ -11,9 +12,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 const debug        = require('debug')('thinterest:server');
 const http         = require('http');
+const session  = require('express-session');
+const routes   = require('./routes/routes');
 
-const index = require('./routes/index');
-const users = require('./routes/users');
+require('./config/passport')(passport);
 
 const app = express();
 
@@ -28,7 +30,7 @@ mongoose.connect('mongodb://mongo:27017');
  */
 
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 /**
  * uncomment after placing your favicon in /public
@@ -46,9 +48,18 @@ app.use(require('node-sass-middleware')({
     sourceMap     : true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret           : 'thinsecret',
+    resave           : false,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/', index);
-app.use('/users', users);
+app.use('/', routes.index);
+app.use('/users', routes.users);
+app.use('/auth', routes.auth);
+app.use('/pictures', routes.pictures);
 
 /**
  * catch 404 and forward to error handler
