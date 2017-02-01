@@ -12,8 +12,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser   = require('body-parser');
 const debug        = require('debug')('thinterest:server');
 const http         = require('http');
-const session  = require('express-session');
-const routes   = require('./routes/routes');
+const session      = require('express-session');
+const routes       = require('./routes/routes');
 
 require('./config/passport')(passport);
 
@@ -22,8 +22,9 @@ const app = express();
 /**
  * Database connection
  */
-
-mongoose.connect('mongodb://mongo:27017');
+setTimeout(() =>{
+    mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017');
+}, 2000);
 
 /**
  * view engine setup
@@ -37,16 +38,12 @@ app.set('view engine', 'pug');
  */
 
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+if ( process.env.NODE_ENV !== 'test' ) {
+    app.use(logger('combined'));
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('node-sass-middleware')({
-    src           : path.join(__dirname, 'public'),
-    dest          : path.join(__dirname, 'public'),
-    indentedSyntax: true,
-    sourceMap     : true
-}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret           : 'thinsecret',
@@ -166,3 +163,5 @@ function onListening(){
     : 'port ' + addr.port;
     debug('Listening on ' + bind);
 }
+
+module.exports     = server;

@@ -1,14 +1,21 @@
 const express = require('express');
 const passport = require('passport');
+const User = require('../models/User');
 const router  = express.Router();
 
 /* GET users listing. */
-router.get('/:id', function(req, res, next){
-    if ( req.isAuthenticated() && req.user.id === req.params.id ) {
-        res.send(`Private profile`)
-    } else {
-        res.send(`Public profile`);
-    }
+router.get('/:id', (req, res, next) =>{
+    User.findOne({
+        'twitter.id': req.params.id
+    }, (err, user) =>{
+        if ( err ) {
+            throw err;
+        }
+        if ( !user ) {
+            res.sendStatus(404);
+        }
+        res.render('profile', { user });
+    });
 });
 
 module.exports = router;
