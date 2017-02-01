@@ -1,0 +1,21 @@
+version: "2"
+services:
+  app:
+    build: .
+    image: thinterest:test
+    container_name: thinterest_test
+    env_file: .env
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: "mongodb://mongo:27017"
+    links:
+      - mongo
+    command: ["npm", "test"]
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
