@@ -1,0 +1,23 @@
+{
+  "name": "thinterest",
+  "description": "Pinterest clone",
+  "main": "server.js",
+  "authors": [
+    "N0bl3"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "masonry": "^4.1.1",
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7"
+  }
+}

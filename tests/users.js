@@ -5,13 +5,14 @@
  */
 process.env.NODE_ENV = 'test';
 
-let mongoose = require("mongoose");
-let User     = require('../models/User');
+const mongoose = require('mongoose');
+const User     = require('../models/User');
+const Picture  = require('../models/Picture');
 
-let chai     = require('chai');
-let chaiHttp = require('chai-http');
-let server   = require('../server');
-let should   = chai.should();
+const chai     = require('chai');
+const chaiHttp = require('chai-http');
+const server   = require('../server');
+const should   = chai.should();
 
 chai.use(chaiHttp);
 
@@ -19,22 +20,55 @@ chai.use(chaiHttp);
  * Remove all from the test db before testing
  */
 describe('Users', () =>{
+    let user = new User;
+
     beforeEach((done) =>{
         User.remove({}, (err) =>{
-            done();
+            Picture.remove({}, (err) =>{
+                let picture = new Picture;
+                picture.url = 'test';
+
+                picture.save((err) =>{
+
+                    user.twitter = {
+                        id: 'test'
+                    };
+                    user.pictures.addToSet(picture.id);
+                    user.save(err =>{
+                        done();
+                    });
+                });
+            });
         });
     });
-});
 
-/**
- * Test routes
- */
-describe('GET /users/:id', () =>{
-    it('should GET error 404', (done) =>{
+    it('asking for existing user should GET its wall', (done) =>{
+        User.findOne({}, (err, user) =>{
+
+            chai.request(server)
+            .get(`/users/${user.twitter.id}`)
+            .end((err, res) =>{
+                res.should.have.status(200);
+                res.should.be.html;
+                done();
+            });
+        });
+    });
+
+    it('asking for non existing user should GET error 404', (done) =>{
         chai.request(server)
         .get('/users/1')
         .end((err, res) =>{
             res.should.have.status(404);
+            done();
+        });
+    });
+
+    it('should redirect unauthenticated users to index and authenticated users to index', (done) =>{
+        chai.request(server)
+        .get('/users')
+        .end((err, res) =>{
+            res.should.redirect;
             done();
         });
     });

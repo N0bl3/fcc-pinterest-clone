@@ -14,7 +14,11 @@ const PictureSchema = new Schema({
     followers  : [{
         type: Schema.Types.ObjectId,
         ref : 'User'
-    }]
+    }],
+    hidden     : {
+        type   : Boolean,
+        default: false
+    }
 });
 PictureSchema.plugin(findOrCreate);
 

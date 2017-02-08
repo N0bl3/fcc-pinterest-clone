@@ -3,7 +3,10 @@ const findOrCreate = require('mongoose-findorcreate');
 const Schema       = mongoose.Schema;
 
 const UserSchema = new Schema({
-    twitter : {},
+    twitter : {
+        type   : Object,
+        default: {}
+    },
     pictures: [{
         type: Schema.Types.ObjectId,
         ref : 'Picture'

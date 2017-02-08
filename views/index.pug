@@ -1,5 +1,22 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    h1=title
+    h2=description
+    p Welcome to #{title}, #{description}
+
+    if user
+        p Logged In
+        p=user
+        a.btn.btn-default(href="#") Post a picture
+        a.btn.btn-default(href="#") My Thinboard
+        a.btn.btn-default(href="/logout") Logout
+    else
+        a.btn.btn-default(href="/login") Login
+
+    div.container.spacer
+    div.grid
+        each picture in pictures || []
+            div.grid-item
+                p=picture.description
+

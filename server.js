@@ -45,6 +45,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(session({
     secret           : 'thinsecret',
     resave           : false,
@@ -54,6 +55,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', routes.index);
+app.use('/login', routes.login);
+app.use('/logout', (req, res) =>{
+    req.logout();
+    res.redirect('/');
+});
 app.use('/users', routes.users);
 app.use('/auth', routes.auth);
 app.use('/pictures', routes.pictures);
@@ -62,7 +68,7 @@ app.use('/pictures', routes.pictures);
  * catch 404 and forward to error handler
  */
 
-app.use(function(req, res, next){
+app.use((req, res, next) =>{
     const err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -71,7 +77,7 @@ app.use(function(req, res, next){
 /**
  * error handler
  */
-app.use(function(err, req, res, next){
+app.use((err, req, res, next) =>{
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error   = req.app.get('env') === 'development' ? err : {};
